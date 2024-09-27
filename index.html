@@ -33,9 +33,12 @@
             light.position.set(1, 1, 1).normalize();
             scene.add(light);
 
-            const loader = new THREE.VRMLoader();
-            loader.load(url, (vrm) => {
-                scene.add(vrm.scene);
+            const loader = new THREE.GLTFLoader();
+            loader.load(url, (gltf) => {
+                THREE.VRMUtils.removeUnnecessaryJoints(gltf.scene);
+                THREE.VRM.from(gltf).then((vrm) => {
+                    scene.add(vrm.scene);
+                });
             });
 
             function animate() {
