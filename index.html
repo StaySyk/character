@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VRM Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.126.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@0.4.0/lib/three-vrm.js"></script>
+</head>
+<body>
+    <h1>VRM Viewer</h1>
+    <input type="file" id="vrmInput" accept=".vrm">
+    <div id="vrmContainer" style="width: 100%; height: 80vh;"></div>
+
+    <script>
+        document.getElementById('vrmInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const url = URL.createObjectURL(file);
+
+            const container = document.getElementById('vrmContainer');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera.position.set(0, 1.5, 3);
+
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(width, height);
+            container.appendChild(renderer.domElement);
+
+            const light = new THREE.DirectionalLight(0xffffff);
+            light.position.set(1, 1, 1).normalize();
+            scene.add(light);
+
+            const loader = new THREE.VRMLoader();
+            loader.load(url, (vrm) => {
+                scene.add(vrm.scene);
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+            animate();
+        });
+    </script>
+</body>
+</html>
